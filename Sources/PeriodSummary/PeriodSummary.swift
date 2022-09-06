@@ -26,9 +26,9 @@ public final class PeriodSummary {
     let accountMap: AccountMap
     
     public init(period: DateInterval,
-                begPositions: [MValuationPosition],
-                endPositions: [MValuationPosition],
-                cashflows: [MValuationCashflow],
+                begPositions: [MValuationPosition] = [],
+                endPositions: [MValuationPosition] = [],
+                cashflows: [MValuationCashflow] = [],
                 accountMap: AccountMap = [:]) {
         self.period = period
         self.begPositions = begPositions
@@ -60,6 +60,12 @@ public final class PeriodSummary {
     public lazy var annualizedPeriodReturn: Double? = {
         guard let _singlePeriodReturn = singlePeriodReturn else { return nil }
         return _singlePeriodReturn / yearsInPeriod
+    }()
+
+    // Compound Annual Growth Rate (CAGR)
+    public lazy var singlePeriodCAGR: Double? = {
+        guard begMarketValue > 0, endMarketValue > 0, yearsInPeriod > 0 else { return nil }
+        return pow(endMarketValue / begMarketValue, 1 / yearsInPeriod) - 1
     }()
     
     public lazy var daysInPeriod: Double = {
