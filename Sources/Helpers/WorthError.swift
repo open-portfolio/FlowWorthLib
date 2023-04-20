@@ -26,7 +26,7 @@ public enum WorthError: Error, Equatable, CustomStringConvertible {
     case reconcileFailure(_ msg: String)
 
     static let df = ISO8601DateFormatter()
-    
+
     public var localizedDescription: String { description }
 
     public var description: String {

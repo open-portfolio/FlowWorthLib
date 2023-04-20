@@ -15,12 +15,11 @@ import AllocData
 import FlowBase
 
 public extension BaseModel {
-    
     var orderedSnapshots: [MValuationSnapshot] {
         valuationSnapshots
             .sorted(by: { $0.capturedAt < $1.capturedAt })
     }
-   
+
     var orderedCashflowItems: [MValuationCashflow] {
         valuationCashflows
             .sorted()
@@ -30,19 +29,19 @@ public extension BaseModel {
         transactions
             .sorted(by: { $0.transactedAt < $1.transactedAt })
     }
-    
+
     var earliestHistory: MTransaction? {
         orderedTxns.first
     }
-    
+
     var earliestHistoryTransactedAt: Date? {
         orderedTxns.first?.transactedAt
     }
-    
+
     var latestSnapshot: MValuationSnapshot? {
         orderedSnapshots.last
     }
-    
+
     var latestSnapshotCapturedAt: Date? {
         latestSnapshot?.capturedAt
     }

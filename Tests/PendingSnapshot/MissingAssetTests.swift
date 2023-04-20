@@ -8,7 +8,6 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 //
 
-
 import Foundation
 
 @testable import FlowWorthLib
@@ -30,7 +29,7 @@ class MissingAssetTests: XCTestCase {
     var ax: WorthContext!
 
     override func setUpWithError() throws {
-        tz = TimeZone.init(identifier: "EST")!
+        tz = TimeZone(identifier: "EST")!
         df = ISO8601DateFormatter()
         timestamp1a = df.date(from: "2020-06-01T12:00:00Z")! // anchor
         timestamp1b = df.date(from: "2020-06-01T13:00:00Z")! // one hour later

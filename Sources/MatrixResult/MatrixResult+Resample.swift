@@ -12,25 +12,24 @@ import Foundation
 
 import AllocData
 
-import FlowBase
 import Accelerate
+import FlowBase
 import SeriesResampler
 
-extension MatrixResult {
-    
-    public static func resample<T: AllocKeyed>(_: T.Type,
-                                               timeSeriesIndiceCount: Int,
-                                               capturedAts: [Date],
-                                               matrixValues: AllocKeyValuesMap<T>) -> AllocKeyValuesMap<T> {
-
+public extension MatrixResult {
+    static func resample<T: AllocKeyed>(_: T.Type,
+                                        timeSeriesIndiceCount: Int,
+                                        capturedAts: [Date],
+                                        matrixValues: AllocKeyValuesMap<T>) -> AllocKeyValuesMap<T>
+    {
         guard capturedAts.count > 0,
               capturedAts.count < timeSeriesIndiceCount
         else { return matrixValues }
-        
-        let timeIntervals = capturedAts.map { $0.timeIntervalSinceReferenceDate }
+
+        let timeIntervals = capturedAts.map(\.timeIntervalSinceReferenceDate)
         guard let resampler = AccelLerpResamplerD(timeIntervals, targetCount: timeSeriesIndiceCount)
         else { return [:] }
-        
+
         return matrixValues.reduce(into: [:]) { map, entry in
             let (key, market_values) = entry
             map[key] = resampler.resample(market_values)

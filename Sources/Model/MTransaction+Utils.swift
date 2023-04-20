@@ -21,12 +21,12 @@ extension MTransaction: HPositionKeyed {
     }
 }
 
-extension MTransaction {    
+extension MTransaction {
     var marketValue: Double? {
         guard let _sharePrice = sharePrice else { return nil }
         return shareCount * _sharePrice
     }
-    
+
     static func getMarketValue(_ txns: [MTransaction]) -> Double? {
         let mvs = txns.map(\.marketValue)
         guard mvs.allSatisfy({ $0 != nil }) else { return nil }

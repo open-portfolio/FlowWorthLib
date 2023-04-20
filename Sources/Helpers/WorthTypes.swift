@@ -14,8 +14,8 @@ import AllocData
 
 import FlowBase
 
-public typealias AccountAssetPositionsMap = [AccountAssetKey : [MValuationPosition]]
-public typealias AccountAssetCashflowsMap = [AccountAssetKey : [MValuationCashflow]]
+public typealias AccountAssetPositionsMap = [AccountAssetKey: [MValuationPosition]]
+public typealias AccountAssetCashflowsMap = [AccountAssetKey: [MValuationCashflow]]
 public typealias AccountAssetValueMap = [AccountAssetKey: Double]
 public typealias AccountCashflowsMap = [AccountKey: [MValuationCashflow]]
 public typealias AccountFilteredMap = [AccountKey: Bool]
@@ -34,7 +34,7 @@ public typealias CashflowKey = MValuationCashflow.Key
 public typealias CashflowMap = [CashflowKey: MValuationCashflow]
 public typealias DateIntervalSnapshotKeyMap = [DateInterval: SnapshotKey]
 public typealias ExtentTuple = (negative: Double, positive: Double)
-public typealias HPositionHoldingMap = [HPositionKey: MHolding]   // merged holdings
+public typealias HPositionHoldingMap = [HPositionKey: MHolding] // merged holdings
 public typealias HPositionHoldingsMap = [HPositionKey: [MHolding]]
 public typealias HPositionTxnsMap = [HPositionKey: [MTransaction]]
 public typealias HPositionValueMap = [HPositionKey: Double]
@@ -53,5 +53,3 @@ public typealias StrategyPositionsMap = [StrategyKey: [MValuationPosition]]
 public typealias StrategyValuesMap = AllocKeyValuesMap<MStrategy>
 public typealias TransactionKeySet = Set<TransactionKey>
 public typealias ValuationTransactionFilter = (MTransaction) -> Bool
-
-

@@ -14,24 +14,23 @@ import AllocData
 
 import FlowBase
 
-extension MTransaction {
-    
+public extension MTransaction {
     /// Obtain unique (and not yet consumed) transactions that will be used to determine the cashflow
     /// filter transactions, starting with beginning of day of last snapshot
-    public static func cashflowFilter(transactions: [MTransaction],
-                                      userExcludedTxnKeys: [TransactionKey] = []) -> [MTransaction] {
-        
+    static func cashflowFilter(transactions: [MTransaction],
+                               userExcludedTxnKeys: [TransactionKey] = []) -> [MTransaction]
+    {
         let userExcludedTxnKeySet = Set(userExcludedTxnKeys)
 
         var consumedKeySet = Set<TransactionKey>()
-        
+
         return transactions.filter { txn in
-            
+
             guard case let key = txn.primaryKey,
                   !consumedKeySet.contains(key), // if key is a duplicate, skip
                   !userExcludedTxnKeySet.contains(key) // if user excluded, skip
             else { return false }
-            
+
             consumedKeySet.insert(key)
             return true
         }

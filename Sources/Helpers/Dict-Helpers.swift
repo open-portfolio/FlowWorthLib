@@ -11,13 +11,12 @@
 import Foundation
 
 extension Dictionary where Key: Comparable, Value: Numeric {
-    
     // from current dict, subtract the keyed values of another dict
     //
     // ["a": 3, "b": 2].add(["a": 1, "c": 4]) => ["a": 4, "b": 2, "c": 4]
     //
     func add(_ other: [Key: Value]) -> [Key: Value] {
-        let combinedKeys = Set(self.keys).union(other.keys)
+        let combinedKeys = Set(keys).union(other.keys)
         return combinedKeys.reduce(into: [:]) { map, key in
             let val = self[key, default: 0] + other[key, default: 0]
             if val != 0 {
@@ -27,13 +26,13 @@ extension Dictionary where Key: Comparable, Value: Numeric {
             }
         }
     }
-    
+
     // from current dict, subtract the keyed values of another dict
     //
     // ["a": 3, "b": 2].subtract(["a": 1, "c": 4]) => ["a": 2, "b": 2, "c": -4]
     //
     func subtract(_ other: [Key: Value]) -> [Key: Value] {
-        let combinedKeys = Set(self.keys).union(other.keys)
+        let combinedKeys = Set(keys).union(other.keys)
         return combinedKeys.reduce(into: [:]) { map, key in
             let val = self[key, default: 0] - other[key, default: 0]
             if val != 0 {
@@ -43,5 +42,4 @@ extension Dictionary where Key: Comparable, Value: Numeric {
             }
         }
     }
-
 }

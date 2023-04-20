@@ -23,7 +23,7 @@ class MValuationPositionUtilsTests: XCTestCase {
         df = ISO8601DateFormatter()
         timestamp = df.date(from: "2020-01-31T12:00:00Z")!
     }
-    
+
     func testAttributes() {
         let pos = MValuationPosition(snapshotID: "XYZ", accountID: "1", assetID: "Bond", totalBasis: 20000, marketValue: 100 * 210)
 
@@ -45,7 +45,7 @@ class MValuationPositionUtilsTests: XCTestCase {
             XCTAssertEqual(error as! WorthError, WorthError.invalidSecurity("XXX"))
         }
     }
-    
+
     func testCreateFailInvalidSharePrice() {
         let holding = MHolding(accountID: "1", securityID: "XXX", lotID: "")
         let security = MSecurity(securityID: "XXX")
@@ -54,7 +54,7 @@ class MValuationPositionUtilsTests: XCTestCase {
             XCTAssertEqual(error as! WorthError, WorthError.invalidPosition("Share price must be greater than 0."))
         }
     }
-    
+
     func testCreateFailInvalidAssetClass() {
         let holding = MHolding(accountID: "1", securityID: "XXX", lotID: "")
         let security = MSecurity(securityID: "XXX", sharePrice: 1)
@@ -81,7 +81,7 @@ class MValuationPositionUtilsTests: XCTestCase {
             XCTAssertEqual(error as! WorthError, WorthError.invalidShareCount("XXX"))
         }
     }
-    
+
     func testCreateTolerateAnyNonNilSharecount() {
         let security = MSecurity(securityID: "XXX", assetID: "Bond", sharePrice: 1)
         let securityMap = [MSecurity.Key(securityID: "xxx"): security]
@@ -95,7 +95,7 @@ class MValuationPositionUtilsTests: XCTestCase {
             XCTAssertEqual([expected], positions)
         }
     }
-    
+
     func testGetFilteredPositions() {
         let pos1 = MValuationPosition(snapshotID: "XYZ", accountID: "1", assetID: "Bond", totalBasis: 1, marketValue: 1)
         let pos2 = MValuationPosition(snapshotID: "XYZ", accountID: "2", assetID: "Bond", totalBasis: 1, marketValue: 1)
@@ -103,10 +103,10 @@ class MValuationPositionUtilsTests: XCTestCase {
         let pos4 = MValuationPosition(snapshotID: "XYZ", accountID: "2", assetID: "LC", totalBasis: 1, marketValue: 1)
         let pos5 = MValuationPosition(snapshotID: "ABC", accountID: "1", assetID: "Bond", totalBasis: 1, marketValue: 1)
         let pos6 = MValuationPosition(snapshotID: "ABC", accountID: "1", assetID: "LC", totalBasis: 1, marketValue: 1)
-        
+
         var model = BaseModel()
         model.valuationPositions = [pos1, pos2, pos3, pos4, pos5, pos6]
-        
+
         var map = AccountFilteredMap()
         let actual1 = MValuationPosition.getPositions(rawPositions: model.valuationPositions, snapshotKeySet: [MValuationSnapshot.Key(snapshotID: "xyz")], accountKeyFilter: { $0 == MAccount.Key(accountID: "1") }, accountFilteredMap: &map)
         let expected1 = [pos1, pos3]

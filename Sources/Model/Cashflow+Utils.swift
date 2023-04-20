@@ -15,12 +15,11 @@ import AllocData
 import FlowBase
 
 public extension MValuationCashflow {
-    
     // net cashflows, total
     static func getNetCashflow(_ items: [MValuationCashflow]) -> Double {
         items.reduce(0) { $0 + $1.amount }
     }
-    
+
     /// net cashflows, mapped by date
     static func getCashflowMap(_ items: [MValuationCashflow]) -> [Date: Double] {
         items.reduce(into: [:]) { map, cashflow in

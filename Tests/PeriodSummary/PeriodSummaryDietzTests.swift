@@ -18,7 +18,6 @@ import AllocData
 import FlowBase
 
 class PeriodSummaryDietzTests: XCTestCase {
-    
     var tz: TimeZone!
     var df: ISO8601DateFormatter!
     var timestamp1a: Date!
@@ -28,7 +27,7 @@ class PeriodSummaryDietzTests: XCTestCase {
     var timestamp2b: Date!
 
     override func setUpWithError() throws {
-        tz = TimeZone.init(identifier: "EST")!
+        tz = TimeZone(identifier: "EST")!
         df = ISO8601DateFormatter()
         timestamp1a = df.date(from: "2020-06-01T12:00:00Z")! // anchor
         timestamp1b = df.date(from: "2020-06-01T13:00:00Z")! // one hour later
@@ -36,10 +35,10 @@ class PeriodSummaryDietzTests: XCTestCase {
         timestamp2a = df.date(from: "2020-06-02T12:00:00Z")! // one day later
         timestamp2b = df.date(from: "2020-06-03T00:00:01Z")! // one day, 12 hours and one second later
     }
-    
+
     func testNoHoldings() throws {
         let period = DateInterval(start: timestamp1a, end: timestamp2a)
         let ps = PeriodSummary(period: period, begPositions: [], endPositions: [], cashflows: [])
-        XCTAssertTrue( ps.dietz!.performance.isNaN)
+        XCTAssertTrue(ps.dietz!.performance.isNaN)
     }
 }

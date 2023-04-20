@@ -29,7 +29,7 @@ class PendingSnapshotTests: XCTestCase {
     var ax: WorthContext!
 
     override func setUpWithError() throws {
-        tz = TimeZone.init(identifier: "EST")!
+        tz = TimeZone(identifier: "EST")!
         df = ISO8601DateFormatter()
         timestamp1a = df.date(from: "2020-06-01T12:00:00Z")! // anchor
         timestamp1b = df.date(from: "2020-06-01T13:00:00Z")! // one hour later
@@ -48,7 +48,7 @@ class PendingSnapshotTests: XCTestCase {
         XCTAssertEqual(model.valuationSnapshots[0].capturedAt, timestamp1a)
         XCTAssertEqual(model.valuationSnapshots[0].snapshotID, pending.snapshotID)
     }
-    
+
     func testPrimaryKeyConflict() throws {
         XCTAssertEqual(0, model.valuationSnapshots.count)
         let pending1 = PendingSnapshot(timestamp: timestamp1a)
@@ -59,16 +59,15 @@ class PendingSnapshotTests: XCTestCase {
             XCTAssertEqual(error as! WorthError, WorthError.cannotCreateSnapshot("A snapshot already exists with that ID."))
         }
     }
-    
+
     // because history record transactedAt don't specify time of day, don't allow two snapshots in same day
     func testDisallowSameDaySnapshot() throws {
-        
         let asset = MAsset(assetID: "Bond", title: "Aggregate Bonds")
         let security = MSecurity(securityID: "BND", assetID: "Bond", sharePrice: 3)
         let strategy = MStrategy(strategyID: "S")
         let account = MAccount(accountID: "1", title: "X", strategyID: "S")
         let holding = MHolding(accountID: "1", securityID: "BND", lotID: "U", shareCount: 5, shareBasis: 7)
-    
+
         model.assets = [asset]
         model.securities = [security]
         model.strategies = [strategy]
@@ -82,12 +81,12 @@ class PendingSnapshotTests: XCTestCase {
         XCTAssertEqual(1, model.valuationSnapshots.count)
         XCTAssertEqual(1, model.valuationPositions.count)
         XCTAssertEqual(0, model.holdings.count)
-        
+
         model.holdings = [holding]
         ax = WorthContext(model) // refresh
 
         let pending2 = PendingSnapshot(timestamp: timestamp1b, previousSnapshot: ax.lastSnapshot)
-        
+
         XCTAssertThrowsError(try model.commitPendingSnapshot(pending2)) { error in
             XCTAssertEqual(error as! WorthError, WorthError.cannotCreateSnapshot("Only one snapshot per 24 hour period."))
         }
@@ -97,14 +96,14 @@ class PendingSnapshotTests: XCTestCase {
         XCTAssertEqual(0, model.holdings.count)
         XCTAssertEqual(0, model.valuationSnapshots.count)
         XCTAssertEqual(0, model.valuationPositions.count)
-        //XCTAssertEqual(0, model.valuationTxns.count)
-        
+        // XCTAssertEqual(0, model.valuationTxns.count)
+
         let asset = MAsset(assetID: "Bond", title: "Aggregate Bonds")
         let security = MSecurity(securityID: "BND", assetID: "Bond", sharePrice: 3)
         let strategy = MStrategy(strategyID: "S")
         let account = MAccount(accountID: "1", title: "X", strategyID: "S")
         let holding = MHolding(accountID: "1", securityID: "BND", lotID: "U", shareCount: 5, shareBasis: 7)
-    
+
         model.assets = [asset]
         model.securities = [security]
         model.strategies = [strategy]
@@ -117,7 +116,7 @@ class PendingSnapshotTests: XCTestCase {
         try model.commitPendingSnapshot(pending)
         XCTAssertEqual(1, model.valuationSnapshots.count)
         XCTAssertEqual(1, model.valuationPositions.count)
-        
+
         let pos = model.valuationPositions[0]
         XCTAssertEqual(pos.snapshotID, pending.snapshotID)
         XCTAssertEqual(pos.accountID, holding.accountID)
@@ -129,19 +128,19 @@ class PendingSnapshotTests: XCTestCase {
 
         XCTAssertEqual(0, model.holdings.count) // ensure holding was cleared
     }
-    
+
     func testOneNegativeHolding() throws {
         XCTAssertEqual(0, model.holdings.count)
         XCTAssertEqual(0, model.valuationSnapshots.count)
         XCTAssertEqual(0, model.valuationPositions.count)
-        //XCTAssertEqual(0, model.valuationTxns.count)
-        
+        // XCTAssertEqual(0, model.valuationTxns.count)
+
         let asset = MAsset(assetID: "Bond", title: "Aggregate Bonds")
         let security = MSecurity(securityID: "BND", assetID: "Bond", sharePrice: 3)
         let strategy = MStrategy(strategyID: "S")
         let account = MAccount(accountID: "1", title: "X", strategyID: "S")
         let holding = MHolding(accountID: "1", securityID: "BND", lotID: "U", shareCount: -5, shareBasis: 7)
-    
+
         model.assets = [asset]
         model.securities = [security]
         model.strategies = [strategy]
@@ -154,7 +153,7 @@ class PendingSnapshotTests: XCTestCase {
         try model.commitPendingSnapshot(pending)
         XCTAssertEqual(1, model.valuationSnapshots.count)
         XCTAssertEqual(1, model.valuationPositions.count)
-        
+
         let pos = model.valuationPositions[0]
         XCTAssertEqual(pos.snapshotID, pending.snapshotID)
         XCTAssertEqual(pos.accountID, holding.accountID)
@@ -163,41 +162,40 @@ class PendingSnapshotTests: XCTestCase {
         XCTAssertEqual(pos.marketValue, holding.shareCount! * security.sharePrice!)
         XCTAssertTrue(pos.totalBasis < 0)
         XCTAssertTrue(pos.marketValue < 0)
-        
+
         XCTAssertEqual(0, model.holdings.count) // ensure holding was cleared
     }
 
     func testNoHoldingsOneTransaction() throws {
-        
         // Assume the holding was sold off prior to snapshot.
         // The history item is ignored, because the share count goal was met.
-        
+
         XCTAssertEqual(0, model.transactions.count)
-        //XCTAssertEqual(0, model.valuationTxns.count)
-        
+        // XCTAssertEqual(0, model.valuationTxns.count)
+
         let asset = MAsset(assetID: "Bond", title: "Aggregate Bonds")
         let security = MSecurity(securityID: "BND", assetID: "Bond", sharePrice: 3)
         let strategy = MStrategy(strategyID: "S")
         let account = MAccount(accountID: "1", title: "X", strategyID: "S")
         let txn = MTransaction(action: .buysell, transactedAt: timestamp2a, accountID: "1", securityID: "BND", shareCount: 5, sharePrice: 3)
         let snapshot = MValuationSnapshot(snapshotID: "V", capturedAt: timestamp1a)
-        
+
         model.assets = [asset]
         model.securities = [security]
         model.strategies = [strategy]
         model.accounts = [account]
         model.transactions = [txn]
         model.valuationSnapshots = [snapshot]
-        
+
         ax = WorthContext(model)
-        
+
         let pending = PendingSnapshot(timestamp: timestamp2a, transactions: [txn], assetMap: ax.assetMap, securityMap: ax.securityMap)
         XCTAssertEqual(timestamp2a, pending.snapshot.capturedAt)
-        //XCTAssertEqual([], pending.nuValuationTxns)
+        // XCTAssertEqual([], pending.nuValuationTxns)
         XCTAssertEqual([], pending.nuCashflows)
         XCTAssertEqual([], pending.nuPositions)
     }
-    
+
     func testInvalidSecurityForHolding() throws {
         let asset = MAsset(assetID: "Bond", title: "Aggregate Bonds")
         let strategy = MStrategy(strategyID: "S")
@@ -214,6 +212,6 @@ class PendingSnapshotTests: XCTestCase {
         }
         XCTAssertEqual(0, model.valuationSnapshots.count)
     }
-    
-    //TODO test to show that securities purchased halfway through the month don't show up in recon cash flow
+
+    // TODO: test to show that securities purchased halfway through the month don't show up in recon cash flow
 }

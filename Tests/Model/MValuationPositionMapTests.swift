@@ -23,7 +23,7 @@ class MValuationPositionMapTests: XCTestCase {
         df = ISO8601DateFormatter()
         timestamp = df.date(from: "2020-01-31T12:00:00Z")!
     }
-    
+
     func testGetPositionShareDiff() {
         let p1 = MValuationPosition(snapshotID: "X", accountID: "1", assetID: "Bond", totalBasis: 3, marketValue: 7 * 1)
         let p2 = MValuationPosition(snapshotID: "X", accountID: "1", assetID: "Bond", totalBasis: 5, marketValue: 13 * 1)
@@ -31,8 +31,8 @@ class MValuationPositionMapTests: XCTestCase {
         let p4 = MValuationPosition(snapshotID: "X", accountID: "1", assetID: "Bond", totalBasis: 9, marketValue: 19 * 1)
 
         let actual = MValuationPosition.getBasisMap(begPositions: [p1, p2], endPositions: [p3, p4])
-        let expected: AccountAssetValueMap = [AccountAssetKey(accountID: "1", assetID: "Bond"): -1 * ((7) + (-13)) + ((-17) + (19))]
-        
+        let expected: AccountAssetValueMap = [AccountAssetKey(accountID: "1", assetID: "Bond"): -1 * (7 + -13) + ((-17) + 19)]
+
         XCTAssertEqual(expected, actual)
     }
 }

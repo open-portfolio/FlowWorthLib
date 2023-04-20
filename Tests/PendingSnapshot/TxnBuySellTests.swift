@@ -46,7 +46,7 @@ class TxnBuySellTests: XCTestCase {
     var prevSnapshot: MValuationSnapshot!
 
     override func setUpWithError() throws {
-        tz = TimeZone.init(identifier: "EST")!
+        tz = TimeZone(identifier: "EST")!
         df = ISO8601DateFormatter()
         timestamp1a = df.date(from: "2020-06-01T12:00:00Z")! // anchor
         timestamp1b = df.date(from: "2020-06-01T13:00:00Z")! // one hour later
@@ -73,16 +73,16 @@ class TxnBuySellTests: XCTestCase {
         spyPos1 = MValuationPosition(snapshotID: snapshotID, accountID: "A", assetID: "LC", totalBasis: 900, marketValue: 1000)
         prevSnapshot = MValuationSnapshot(snapshotID: "y", capturedAt: timestamp1a)
     }
-    
+
     // MARK: - Buy/Sell Transaction
-    
+
     func testFirstEmpty() throws {
         let ps = PendingSnapshot()
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 0)
     }
-    
+
     func testFirst1hold0txn() throws {
         let ps = PendingSnapshot(snapshotID: snapshotID,
                                  timestamp: timestamp3a,
@@ -91,11 +91,11 @@ class TxnBuySellTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 1)
         XCTAssertEqual(bondPos1, ps.nuPositions.first)
     }
-    
+
     func testFirst1hold1txn() throws {
         let ps = PendingSnapshot(snapshotID: snapshotID,
                                  timestamp: timestamp3a,
@@ -104,11 +104,11 @@ class TxnBuySellTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 1)
         XCTAssertEqual(bondPos1, ps.nuPositions.first)
     }
-    
+
     // prev snapshot was empty; no holdings yet
     func test0pos0hold0txn() throws {
         let ps = PendingSnapshot(snapshotID: snapshotID,
@@ -118,10 +118,10 @@ class TxnBuySellTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 0)
     }
-    
+
     // first snapshot was empty; now have one holding (missing transaction showing a purchase!)
     func test0pos1hold0txn() throws {
         let ps = PendingSnapshot(snapshotID: snapshotID,
@@ -132,11 +132,11 @@ class TxnBuySellTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 1)
         XCTAssertEqual(bondPos1, ps.nuPositions.first)
     }
-    
+
     // first snapshot was empty; now have two holdings (missing transactions showing a purchase!)
     func test0pos2hold0txn() throws {
         let ps = PendingSnapshot(snapshotID: snapshotID,
@@ -147,10 +147,10 @@ class TxnBuySellTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 2)
     }
-        
+
     // the position just disappeared (without any transaction). Assume value dropped to 0.
     func test1pos0hold() throws {
         let ps = PendingSnapshot(snapshotID: snapshotID,
@@ -160,10 +160,10 @@ class TxnBuySellTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 0)
     }
-        
+
     // position replaced with another (no transactions)
     func test1pos1hold0txnSwap() throws {
         let ps = PendingSnapshot(snapshotID: snapshotID,
@@ -174,7 +174,7 @@ class TxnBuySellTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 1)
     }
 }

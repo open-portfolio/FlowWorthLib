@@ -23,9 +23,8 @@ class SnapshotPositionsTests: XCTestCase {
         timestamp1 = df.date(from: "2020-06-01T12:00:00Z")!
         timestamp2 = df.date(from: "2020-06-01T13:00:00Z")! // one hour later
     }
-    
+
     func testRollUpPositions() throws {
-        
         let security1 = MSecurity(securityID: "BND", assetID: "Bond", sharePrice: 20)
         let asset1 = MAsset(assetID: "Bond")
         let holding1 = MHolding(accountID: "1", securityID: "BND", lotID: "", shareCount: 3, shareBasis: 11)
@@ -40,19 +39,19 @@ class SnapshotPositionsTests: XCTestCase {
                                                         snapshotID: "X",
                                                         securityMap: securityMap,
                                                         assetMap: assetMap)
-        
+
         let totalShareCount: Double = 3 + 5 + 7
         let totalBasis = (3 * 11) + (5 * 13) + (7 * 17)
-        //let netShareBasis = Double(totalBasis) / totalShareCount
+        // let netShareBasis = Double(totalBasis) / totalShareCount
         let marketValue = security1.sharePrice! * totalShareCount
-        
+
         let expected = [
-            MValuationPosition(snapshotID: "X", accountID: "1", assetID: "Bond", totalBasis: Double(totalBasis), marketValue: marketValue)
+            MValuationPosition(snapshotID: "X", accountID: "1", assetID: "Bond", totalBasis: Double(totalBasis), marketValue: marketValue),
         ]
-        
+
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testCreateCashPosition() throws {
         let security1 = MSecurity(securityID: "CORE", assetID: "Cash", sharePrice: 1)
         let asset1 = MAsset(assetID: "Cash")
@@ -60,16 +59,16 @@ class SnapshotPositionsTests: XCTestCase {
 
         let securityMap = [MSecurity.Key(securityID: "CORE"): security1]
         let assetMap = [MAsset.Key(assetID: "Cash"): asset1]
-        
+
         let actual = MValuationPosition.createPositions(holdings: [holding1],
                                                         snapshotID: "X",
                                                         securityMap: securityMap,
                                                         assetMap: assetMap)
 
         let expected = [
-            MValuationPosition(snapshotID: "X", accountID: "1", assetID: "Cash", totalBasis: 30, marketValue: 30)
+            MValuationPosition(snapshotID: "X", accountID: "1", assetID: "Cash", totalBasis: 30, marketValue: 30),
         ]
-        
+
         XCTAssertEqual(expected, actual)
     }
 }

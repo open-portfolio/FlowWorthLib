@@ -51,7 +51,7 @@ class TxnIncomeTests: XCTestCase {
     var prevSnapshot: MValuationSnapshot!
 
     override func setUpWithError() throws {
-        tz = TimeZone.init(identifier: "EST")!
+        tz = TimeZone(identifier: "EST")!
         df = ISO8601DateFormatter()
         timestamp1a = df.date(from: "2020-06-01T12:00:00Z")! // anchor
         timestamp1b = df.date(from: "2020-06-01T13:00:00Z")! // one hour later
@@ -89,7 +89,7 @@ class TxnIncomeTests: XCTestCase {
         cashPos1 = MValuationPosition(snapshotID: snapshotID, accountID: "A", assetID: "Cash", totalBasis: 20, marketValue: 20)
         prevSnapshot = MValuationSnapshot(snapshotID: "y", capturedAt: timestamp1a)
     }
-    
+
     // MARK: - Dividend Income
 
     // transaction showing dividend income, but it's not showing as a holding
@@ -121,13 +121,13 @@ class TxnIncomeTests: XCTestCase {
         let expected = [
             MValuationCashflow(transactedAt: timestamp2a, accountID: "A", assetID: "Bond", amount: -20),
             MValuationCashflow(transactedAt: timestamp2a, accountID: "A", assetID: "Cash", amount: 20),
-            ]
+        ]
         XCTAssertEqual(expected, ps.nuCashflows)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 0)
         XCTAssertEqual(ps.periodSummary!.endMarketValue, 0)
     }
-    
+
     // transaction showing dividend income, and it's showing as a holding
     // (ensure it doesn't generate any cash flow records, because this is the first snapshot)
     func testFirst1hold1div() throws {
@@ -140,7 +140,7 @@ class TxnIncomeTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 1)
         XCTAssertEqual(cashPos1, ps.nuPositions.first)
         XCTAssertNil(ps.periodSummary)
@@ -161,16 +161,16 @@ class TxnIncomeTests: XCTestCase {
         let expected = [
             MValuationCashflow(transactedAt: timestamp2a, accountID: "A", assetID: "Bond", amount: -20),
             MValuationCashflow(transactedAt: timestamp2a, accountID: "A", assetID: "Cash", amount: 20),
-            ]
+        ]
         XCTAssertEqual(expected, ps.nuCashflows)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 1)
         XCTAssertEqual(cashPos1, ps.nuPositions.first)
         XCTAssertEqual(ps.periodSummary!.endMarketValue, 20)
     }
 
     // MARK: - Interest Income
-    
+
     // transaction showing interest income, but it's not showing as a holding
     // because it happened prior to first snapshot, we'll ignore it
     func testFirst0hold1int() throws {
@@ -182,7 +182,7 @@ class TxnIncomeTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 0)
         XCTAssertNil(ps.periodSummary)
     }
@@ -198,11 +198,11 @@ class TxnIncomeTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 0)
         XCTAssertEqual(ps.periodSummary!.endMarketValue, 0)
     }
-    
+
     // transaction showing interest income, and it's showing as a holding
     // (ensure it doesn't generate any cash flow)
     func testFirst1hold1int() throws {
@@ -214,7 +214,7 @@ class TxnIncomeTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 1)
         XCTAssertEqual(cashPos1, ps.nuPositions.first)
         XCTAssertNil(ps.periodSummary)
@@ -232,10 +232,9 @@ class TxnIncomeTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 1)
         XCTAssertEqual(cashPos1, ps.nuPositions.first)
         XCTAssertEqual(ps.periodSummary!.endMarketValue, 20)
     }
-    
 }

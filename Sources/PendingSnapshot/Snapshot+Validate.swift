@@ -15,19 +15,18 @@ import AllocData
 import FlowBase
 
 extension MValuationSnapshot {
-    
     /// check whether a new snapshot can be created; returns previous snapshot, if any
     static func validateSnapshot(previousSnapshotCapturedAt: Date?,
-                                 timestamp: Date = Date()) throws {
-        
+                                 timestamp: Date = Date()) throws
+    {
         guard let _previousSnapshotCapturedAt = previousSnapshotCapturedAt else { return }
-        
+
         // there's at least one other snapshot
-        
+
         if timestamp <= _previousSnapshotCapturedAt {
             throw WorthError.cannotCreateSnapshot("Must be newer than existing snapshots.")
         }
-        
+
         let interval = _previousSnapshotCapturedAt.distance(to: timestamp)
         if interval < 86400 {
             throw WorthError.cannotCreateSnapshot("Only one snapshot per 24 hour period.")
@@ -38,7 +37,7 @@ extension MValuationSnapshot {
 extension BaseModel {
     func validateSnapshot(snapshot: MValuationSnapshot) throws {
         let snapshotKey = snapshot.primaryKey
-        if self.valuationSnapshots.first(where: { $0.primaryKey == snapshotKey }) != nil {
+        if valuationSnapshots.first(where: { $0.primaryKey == snapshotKey }) != nil {
             throw WorthError.cannotCreateSnapshot("A snapshot already exists with that ID.")
         }
     }

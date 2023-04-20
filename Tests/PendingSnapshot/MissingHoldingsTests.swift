@@ -29,7 +29,7 @@ class MissingHoldingsTests: XCTestCase {
     var ax: WorthContext!
 
     override func setUpWithError() throws {
-        tz = TimeZone.init(identifier: "EST")!
+        tz = TimeZone(identifier: "EST")!
         df = ISO8601DateFormatter()
         timestamp1a = df.date(from: "2020-06-01T12:00:00Z")! // anchor
         timestamp1b = df.date(from: "2020-06-01T13:00:00Z")! // one hour later
@@ -52,24 +52,23 @@ class MissingHoldingsTests: XCTestCase {
         ax = WorthContext(model)
         let pending1 = PendingSnapshot(timestamp: timestamp1a)
         try model.commitPendingSnapshot(pending1)
-        
-        //XCTAssertEqual(1, model.valuationHoldings.count)
-        
+
+        // XCTAssertEqual(1, model.valuationHoldings.count)
+
         // clear out the 'helper' records
-        //model.valuationHoldings = []
-        
+        // model.valuationHoldings = []
+
         // same holdings as in first snapshot
         model.holdings = [holding]
         ax = WorthContext(model)
-        
+
         let pending2 = PendingSnapshot(timestamp: timestamp2a)
         try model.commitPendingSnapshot(pending2)
-        
+
         let expectedCF: [MValuationCashflow] = [
-            //MValuationCashflow(transactedAt: timestamp2a, accountID: "1", assetID: "Bond", amount: -1 * 5 * 7, reconciled: true)
+            // MValuationCashflow(transactedAt: timestamp2a, accountID: "1", assetID: "Bond", amount: -1 * 5 * 7, reconciled: true)
         ]
-        
+
         XCTAssertEqual(expectedCF, model.valuationCashflows)
     }
-
 }

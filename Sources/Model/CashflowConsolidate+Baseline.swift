@@ -10,14 +10,14 @@
 
 import Foundation
 
-import ModifiedDietz
 import AllocData
+import ModifiedDietz
 
 import FlowBase
 
 extension Comparable {
     func clamped(to limits: ClosedRange<Self>) -> Self {
-        return min(max(self, limits.lowerBound), limits.upperBound)
+        min(max(self, limits.lowerBound), limits.upperBound)
     }
 }
 
@@ -32,13 +32,14 @@ public class MyBaseline {
     let endValue: Double // B
     let netCashflow: Double // F (if 0, then W will be inf/nan)
     let epsilon: Double
-    
+
     public init(period: DateInterval,
                 performance: Double,
                 startValue: Double,
                 endValue: Double,
                 netCashflow: Double,
-                epsilon: Double = 0.0001) {
+                epsilon: Double = 0.0001)
+    {
         self.period = period
         self.performance = performance
         self.startValue = startValue
@@ -46,36 +47,34 @@ public class MyBaseline {
         self.netCashflow = netCashflow
         self.epsilon = epsilon
     }
-    
+
     // The proportion of the time period between the START of the period and when the flow occurs.
     // beginning of period: w == 0
     // end of period: w == 1
     // This weight assumes a single (consolidated) cash flow record for the account/asset.
     lazy var rawWeight: Double = {
         let num = endValue - netCashflow - (startValue * (performance + 1))
-        
+
         // if no change in value, place CF at end of period
         guard num.isNotEqualToZero(accuracy: epsilon) else {
             return 1
         }
-                    
+
         let den = performance * netCashflow
-        
+
         // if no netCashflow, place at end of period
         guard den.isNotEqualToZero(accuracy: epsilon) else {
             return 1
         }
-        
+
         return 1 - (num / den)
     }()
-    
-    lazy var weight: Double = {
-        rawWeight.clamped(to: 0...1)
-    }()
-    
+
+    lazy var weight: Double = rawWeight.clamped(to: 0 ... 1)
+
     lazy var netDate: Date = {
         var d = period.at(weight)
-        
+
         // exclude the exact start of the period, as it belongs to previous period
         // jump one second into the period
         if d == period.start {
@@ -90,9 +89,9 @@ public class MyBaseline {
 extension MyBaseline: Equatable {
     public static func == (lhs: MyBaseline, rhs: MyBaseline) -> Bool {
         lhs.period == rhs.period &&
-        lhs.performance.isEqual(to: rhs.performance, accuracy: lhs.epsilon) &&
-        lhs.startValue.isEqual(to: rhs.startValue, accuracy: lhs.epsilon) &&
-        lhs.endValue.isEqual(to: rhs.endValue, accuracy: lhs.epsilon) &&
-        lhs.netCashflow == rhs.netCashflow
+            lhs.performance.isEqual(to: rhs.performance, accuracy: lhs.epsilon) &&
+            lhs.startValue.isEqual(to: rhs.startValue, accuracy: lhs.epsilon) &&
+            lhs.endValue.isEqual(to: rhs.endValue, accuracy: lhs.epsilon) &&
+            lhs.netCashflow == rhs.netCashflow
     }
 }

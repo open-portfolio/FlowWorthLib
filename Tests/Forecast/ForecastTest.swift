@@ -18,7 +18,6 @@ import AllocData
 import FlowBase
 
 class ForecastTests: XCTestCase {
-    
     var tz: TimeZone!
     var df: ISO8601DateFormatter!
     var timestamp1a: Date!
@@ -40,7 +39,7 @@ class ForecastTests: XCTestCase {
     var ax: WorthContext!
 
     override func setUpWithError() throws {
-        tz = TimeZone.init(identifier: "EST")!
+        tz = TimeZone(identifier: "EST")!
         df = ISO8601DateFormatter()
         timestamp1a = df.date(from: "2020-06-01T12:00:00Z")! // anchor
         timestamp1b = df.date(from: "2020-06-01T13:00:00Z")! // one hour later
@@ -49,7 +48,7 @@ class ForecastTests: XCTestCase {
         timestamp2b = df.date(from: "2020-06-03T00:00:01Z")! // one day, 12 hours and one second later
         timestamp3a = df.date(from: "2020-06-03T06:00:00Z")! // one day beyond start of day (for 2a)
         timestamp3b = df.date(from: "2020-06-03T12:00:00Z")!
-        
+
         snapshot1a = MValuationSnapshot(snapshotID: "1a", capturedAt: timestamp1a)
         snapshot1b = MValuationSnapshot(snapshotID: "1b", capturedAt: timestamp1b)
         snapshot1c = MValuationSnapshot(snapshotID: "1c", capturedAt: timestamp1c)
@@ -57,7 +56,7 @@ class ForecastTests: XCTestCase {
         snapshot2b = MValuationSnapshot(snapshotID: "2b", capturedAt: timestamp2b)
         snapshot3a = MValuationSnapshot(snapshotID: "3a", capturedAt: timestamp3a)
         snapshot3b = MValuationSnapshot(snapshotID: "3b", capturedAt: timestamp3b)
-        
+
         model = BaseModel()
         ax = WorthContext(model)
     }

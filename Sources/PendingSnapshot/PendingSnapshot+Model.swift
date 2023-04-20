@@ -15,27 +15,26 @@ import AllocData
 import FlowBase
 
 public extension BaseModel {
-    
     /// NOTE reset context after committing
     mutating func commitPendingSnapshot(_ ps: PendingSnapshot) throws {
-        //print("\(#function) ENTER"); defer { //print("\(#function) EXIT") }
-        
+        // print("\(#function) ENTER"); defer { //print("\(#function) EXIT") }
+
         // store consumed history items, if any
         // store positions for snapshot to model.valuationPositions
         // store cashflow items to model.valuationCashflow
         // store new snapshot to model.valuationSnapshot
-        
+
         // validate the holdings, snapshot, etc.
         try ps.validate()
-        try self.validateSnapshot(snapshot: ps.snapshot)
+        try validateSnapshot(snapshot: ps.snapshot)
 
         valuationPositions.append(contentsOf: ps.nuPositions)
         valuationCashflows.append(contentsOf: ps.nuCashflows)
         valuationSnapshots.append(ps.snapshot)
-        
+
         clearBuilderDataFromModel()
     }
-    
+
     mutating func clearBuilderDataFromModel() {
         // clear out workspace
         holdings.removeAll()

@@ -20,7 +20,6 @@ import FlowBase
 // these tests are used to define disabling behavior of the "Create Snapshot" button, where it's only enabled if validation passes.
 
 class PendingValidateTests: XCTestCase {
-    
     var df: ISO8601DateFormatter!
     var timestamp1: Date!
     var timestamp2: Date!

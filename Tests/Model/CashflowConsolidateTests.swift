@@ -30,9 +30,9 @@ class CashflowConsolidateTests: XCTestCase {
     var timestamp7: Date!
     var model: BaseModel!
     var ax: WorthContext!
-    
+
     public typealias MD = ModifiedDietz<Double>
-    
+
     override func setUpWithError() throws {
         df = ISO8601DateFormatter()
         timestamp1A = df.date(from: "2020-06-01T12:00:00Z")!
@@ -46,7 +46,7 @@ class CashflowConsolidateTests: XCTestCase {
         model = BaseModel()
         ax = WorthContext(model)
     }
-    
+
     func testGetBaselineMap() throws {
         let period = DateInterval(start: timestamp1A, end: timestamp4)
         let cashflow1 = MValuationCashflow(transactedAt: timestamp2, accountID: "1", assetID: "Bond", amount: 100)
@@ -56,14 +56,14 @@ class CashflowConsolidateTests: XCTestCase {
         let accountAssetKey = AccountAssetKey(accountID: "1", assetID: "Bond")
         let cashflows = [cashflow1, cashflow2]
         let netCashflow = MValuationCashflow.getNetCashflow(cashflows)
-        
+
         let performance = -0.1809 // target performance
         let expectedBaseline = MyBaseline(period: period,
                                           performance: performance,
                                           startValue: position1.marketValue,
                                           endValue: position2.marketValue,
                                           netCashflow: netCashflow)
-        
+
         let positionsBeg: AccountAssetPositionsMap = [accountAssetKey: [position1]]
         let positionsEnd: AccountAssetPositionsMap = [accountAssetKey: [position2]]
         let cashflowsMap: AccountAssetCashflowsMap = [accountAssetKey: cashflows]
@@ -74,7 +74,7 @@ class CashflowConsolidateTests: XCTestCase {
         let expected: AccountAssetBaselineMap = [accountAssetKey: expectedBaseline]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testConsolidateWithEmptyBaselineMapDiscardsCashflows() throws {
         let snapshot1 = MValuationSnapshot(snapshotID: "1", capturedAt: timestamp1A)
         let snapshot2 = MValuationSnapshot(snapshotID: "2", capturedAt: timestamp4)

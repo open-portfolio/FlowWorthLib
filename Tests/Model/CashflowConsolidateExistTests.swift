@@ -24,9 +24,9 @@ class CashflowConsolidateExistTests: XCTestCase {
     var timestamp4: Date!
     var model: BaseModel!
     var ax: WorthContext!
-    
+
     public typealias MD = ModifiedDietz<Double>
-    
+
     override func setUpWithError() throws {
         df = ISO8601DateFormatter()
         timestamp1 = df.date(from: "2020-06-01T12:00:00Z")!
@@ -34,11 +34,11 @@ class CashflowConsolidateExistTests: XCTestCase {
         model = BaseModel()
         ax = WorthContext(model)
     }
-    
+
     func testFindNoneForEmpty() {
         XCTAssertFalse(MValuationCashflow.consolidateCandidatesExist(ax))
     }
-    
+
     func testFindNoneForAlreadyConsolidated() {
         let snapshot1 = MValuationSnapshot(snapshotID: "1", capturedAt: timestamp1)
         let snapshot2 = MValuationSnapshot(snapshotID: "2", capturedAt: timestamp4)
@@ -47,10 +47,10 @@ class CashflowConsolidateExistTests: XCTestCase {
         model.valuationSnapshots = [snapshot1, snapshot2]
         model.valuationCashflows = [cashflow1, cashflow2]
         ax = WorthContext(model)
-        
+
         XCTAssertFalse(MValuationCashflow.consolidateCandidatesExist(ax))
     }
-    
+
     func testFindOneForUnconsolidated() {
         let snapshot1 = MValuationSnapshot(snapshotID: "1", capturedAt: timestamp1)
         let snapshot2 = MValuationSnapshot(snapshotID: "2", capturedAt: timestamp4)
@@ -59,7 +59,7 @@ class CashflowConsolidateExistTests: XCTestCase {
         model.valuationSnapshots = [snapshot1, snapshot2]
         model.valuationCashflows = [cashflow1, cashflow2]
         ax = WorthContext(model)
-        
+
         XCTAssertTrue(MValuationCashflow.consolidateCandidatesExist(ax))
     }
 }

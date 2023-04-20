@@ -39,29 +39,29 @@ class GenerateCashflowTests: XCTestCase {
         core = MSecurity(securityID: "CORE", assetID: "Cash", sharePrice: 1)
         securityMap = [MSecurity.Key(securityID: "AGG"): agg, MSecurity.Key(securityID: "SPY"): spy, MSecurity.Key(securityID: "CORE"): core]
     }
-    
+
     func testEmpty() throws {
         let actual = MValuationCashflow.generateCashflow(from: [], period: period1, securityMap: securityMap)
         let expected: [MValuationCashflow] = []
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testStartClamped() throws {
         let period = DateInterval(start: timestamp2, end: timestamp3)
         let txn = MTransaction(action: .miscflow, transactedAt: timestamp1, accountID: "1", securityID: "", lotID: "", shareCount: 3, sharePrice: 1)
         let actual = MValuationCashflow.generateCashflow(from: [txn], period: period, securityMap: securityMap)
         let expected: [MValuationCashflow] = [
-            MValuationCashflow(transactedAt: timestamp2, accountID: "1", assetID: "Cash", amount: 3.0)
+            MValuationCashflow(transactedAt: timestamp2, accountID: "1", assetID: "Cash", amount: 3.0),
         ]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testEndClamped() throws {
         let period = DateInterval(start: timestamp1, end: timestamp2)
         let txn = MTransaction(action: .miscflow, transactedAt: timestamp3, accountID: "1", securityID: "", lotID: "", shareCount: 3, sharePrice: 1)
         let actual = MValuationCashflow.generateCashflow(from: [txn], period: period, securityMap: securityMap)
         let expected: [MValuationCashflow] = [
-            MValuationCashflow(transactedAt: timestamp2, accountID: "1", assetID: "Cash", amount: 3.0)
+            MValuationCashflow(transactedAt: timestamp2, accountID: "1", assetID: "Cash", amount: 3.0),
         ]
         XCTAssertEqual(expected, actual)
     }
@@ -71,11 +71,11 @@ class GenerateCashflowTests: XCTestCase {
         let actual = MValuationCashflow.generateCashflow(from: [txn], period: period1, securityMap: securityMap)
         let expected: [MValuationCashflow] = [
             MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "LC", amount: 315.0),
-            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: -315.0)
+            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: -315.0),
         ]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testPurchaseCash() throws {
         let txn = MTransaction(action: .buysell, transactedAt: timestamp1, accountID: "1", securityID: "CORE", lotID: "", shareCount: 3, sharePrice: 105)
         let actual = MValuationCashflow.generateCashflow(from: [txn], period: period1, securityMap: securityMap)
@@ -89,11 +89,11 @@ class GenerateCashflowTests: XCTestCase {
         let actual = MValuationCashflow.generateCashflow(from: [txn], period: period1, securityMap: securityMap)
         let expected: [MValuationCashflow] = [
             MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "LC", amount: -315.0),
-            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: 315.0)
+            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: 315.0),
         ]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testSellCash() throws {
         let txn = MTransaction(action: .buysell, transactedAt: timestamp1, accountID: "1", securityID: "CORE", lotID: "", shareCount: -3, sharePrice: 105)
         let actual = MValuationCashflow.generateCashflow(from: [txn], period: period1, securityMap: securityMap)
@@ -107,27 +107,27 @@ class GenerateCashflowTests: XCTestCase {
         let actual = MValuationCashflow.generateCashflow(from: [txn], period: period1, securityMap: securityMap)
         let expected: [MValuationCashflow] = [
             MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: -1.55),
-            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: 1.55)
+            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: 1.55),
         ]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testDividendIncomeFromSecurity() throws {
         let txn = MTransaction(action: .income, transactedAt: timestamp1, accountID: "1", securityID: "SPY", lotID: "", shareCount: 1.55, sharePrice: 1)
         let actual = MValuationCashflow.generateCashflow(from: [txn], period: period1, securityMap: securityMap)
         let expected: [MValuationCashflow] = [
             MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "LC", amount: -1.55),
-            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: 1.55)
+            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: 1.55),
         ]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testDividendIncomeFromCash() throws {
         let txn = MTransaction(action: .income, transactedAt: timestamp1, accountID: "1", securityID: "CORE", lotID: "", shareCount: 1.55, sharePrice: 1)
         let actual = MValuationCashflow.generateCashflow(from: [txn], period: period1, securityMap: securityMap)
         let expected: [MValuationCashflow] = [
             MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: -1.55),
-            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: 1.55)
+            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: 1.55),
         ]
         XCTAssertEqual(expected, actual)
     }
@@ -142,16 +142,16 @@ class GenerateCashflowTests: XCTestCase {
                                sharePrice: 1)
         let actual = MValuationCashflow.generateCashflow(from: [txn], period: period1, securityMap: securityMap)
         let expected: [MValuationCashflow] = [
-            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: 1.55)
+            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: 1.55),
         ]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testTransferCashOut() throws {
         let txn = MTransaction(action: .transfer, transactedAt: timestamp1, accountID: "1", securityID: "", lotID: "", shareCount: -155, sharePrice: 1)
         let actual = MValuationCashflow.generateCashflow(from: [txn], period: period1, securityMap: securityMap)
         let expected: [MValuationCashflow] = [
-            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: -155)
+            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: -155),
         ]
         XCTAssertEqual(expected, actual)
     }
@@ -160,11 +160,11 @@ class GenerateCashflowTests: XCTestCase {
         let txn = MTransaction(action: .transfer, transactedAt: timestamp1, accountID: "1", securityID: "SPY", lotID: "", shareCount: 15, sharePrice: 102)
         let actual = MValuationCashflow.generateCashflow(from: [txn], period: period1, securityMap: securityMap)
         let expected: [MValuationCashflow] = [
-            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "LC", amount: 1530)
+            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "LC", amount: 1530),
         ]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testTransferSecurityOut() throws {
         let txn = MTransaction(action: .transfer, transactedAt: timestamp1, accountID: "1", securityID: "SPY", lotID: "", shareCount: -15, sharePrice: 102)
         let actual = MValuationCashflow.generateCashflow(from: [txn], period: period1, securityMap: securityMap)
@@ -175,12 +175,12 @@ class GenerateCashflowTests: XCTestCase {
         ]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testMiscIn() throws {
         let txn = MTransaction(action: .miscflow, transactedAt: timestamp1, accountID: "1", securityID: "", lotID: "", shareCount: 12, sharePrice: 1)
         let actual = MValuationCashflow.generateCashflow(from: [txn], period: period1, securityMap: securityMap)
         let expected: [MValuationCashflow] = [
-            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: 12)
+            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: 12),
         ]
         XCTAssertEqual(expected, actual)
     }
@@ -189,7 +189,7 @@ class GenerateCashflowTests: XCTestCase {
         let txn = MTransaction(action: .miscflow, transactedAt: timestamp1, accountID: "1", securityID: "", lotID: "", shareCount: -12, sharePrice: 1)
         let actual = MValuationCashflow.generateCashflow(from: [txn], period: period1, securityMap: securityMap)
         let expected: [MValuationCashflow] = [
-            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: -12)
+            MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Cash", amount: -12),
         ]
         XCTAssertEqual(expected, actual)
     }

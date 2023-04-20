@@ -21,4 +21,3 @@ func assertEqual(_ date1: Date?, _ date2: Date?, accuracy: Double) {
                    accuracy: accuracy,
                    "\(df.string(from: _date1)) != \(df.string(from: _date2))")
 }
-

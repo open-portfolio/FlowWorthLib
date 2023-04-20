@@ -15,7 +15,6 @@ import ModifiedDietz
 
 // simple struct needed with ForEach
 public struct DietzSnapshotInfo: Hashable, Identifiable {
-
     public typealias MDietz = ModifiedDietz<Double>
 
     public var id: Double
@@ -26,14 +25,14 @@ public struct DietzSnapshotInfo: Hashable, Identifiable {
     public var marketValue: Double
 
     internal init(capturedAt: Date, netCashflow: Double, r: Double, rToDate: Double, marketValue: Double) {
-        self.id = capturedAt.timeIntervalSinceReferenceDate
+        id = capturedAt.timeIntervalSinceReferenceDate
         self.capturedAt = capturedAt
         self.netCashflow = netCashflow
         self.r = r
         self.rToDate = rToDate
         self.marketValue = marketValue
     }
-    
+
     public static func getDietzSnapshots(_ mr: MatrixResult) -> [DietzSnapshotInfo] {
         var lastMarketValue: Double = mr.periodSummary?.begMarketValue ?? 0
         var cumulTxns: MDietz.CashflowMap = [:]
@@ -46,13 +45,13 @@ public struct DietzSnapshotInfo: Hashable, Identifiable {
             // snapshot performance
             let cashflowItems = mr.snapshotCashflowsMap[snapshotKey] ?? []
             let cashflowMap = MValuationCashflow.getCashflowMap(cashflowItems)
-            guard let snapshotMD = MDietz.init(period: snapshotPeriod, startValue: lastMarketValue, endValue: endMarketValue, cashflowMap: cashflowMap)
+            guard let snapshotMD = MDietz(period: snapshotPeriod, startValue: lastMarketValue, endValue: endMarketValue, cashflowMap: cashflowMap)
             else { return }
-            
+
             // cumulative (period-to-date) performance
             cashflowItems.forEach {
                 cumulTxns[$0.transactedAt, default: 0] += $0.amount
-            }            
+            }
             let cumulPeriod = DateInterval(start: mr.begCapturedAt, end: snapshotPeriod.end)
             let begMarketValue = mr.periodSummary?.begMarketValue ?? 0
             let cumulMV = MDietz.MarketValueDelta(start: begMarketValue, end: endMarketValue)
@@ -65,10 +64,10 @@ public struct DietzSnapshotInfo: Hashable, Identifiable {
                                            r: snapshotMD.performance,
                                            rToDate: cumulMD.performance,
                                            marketValue: endMarketValue))
-            
+
             lastMarketValue = endMarketValue
         }
-        
+
         return array
     }
 }

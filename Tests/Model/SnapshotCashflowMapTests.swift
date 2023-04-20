@@ -35,20 +35,20 @@ class SnapshotCashflowMapTests: XCTestCase {
         model = BaseModel()
         ax = WorthContext(model)
     }
-    
+
     func testEmpty() {
         let actual = MValuationCashflow.getSnapshotCashflowsMap(orderedSnapshots: [], orderedCashflows: [], snapshotDateIntervalMap: [:])
         let expected: SnapshotCashflowsMap = [:]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testOneSnapshot() {
         let snapshot = MValuationSnapshot(snapshotID: "1", capturedAt: timestamp1)
         let actual = MValuationCashflow.getSnapshotCashflowsMap(orderedSnapshots: [snapshot], orderedCashflows: [], snapshotDateIntervalMap: [:])
         let expected: SnapshotCashflowsMap = [snapshot.primaryKey: []]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testOneSnapshotAndOneCashflow() {
         let snapshot1 = MValuationSnapshot(snapshotID: "1", capturedAt: timestamp1)
         let cashflow1 = MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Bond")
@@ -56,7 +56,7 @@ class SnapshotCashflowMapTests: XCTestCase {
         let expected: SnapshotCashflowsMap = [snapshot1.primaryKey: []]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testTwoSnapshotsAndOneCashflowOutOfRangePrior() {
         let snapshot1 = MValuationSnapshot(snapshotID: "1", capturedAt: timestamp1)
         let snapshot2 = MValuationSnapshot(snapshotID: "2", capturedAt: timestamp2)
@@ -67,7 +67,7 @@ class SnapshotCashflowMapTests: XCTestCase {
         let expected: SnapshotCashflowsMap = [snapshot1.primaryKey: []]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testTwoSnapshotsAndOneCashflowOutOfRangeFollowing() {
         let snapshot1 = MValuationSnapshot(snapshotID: "1", capturedAt: timestamp1)
         let snapshot2 = MValuationSnapshot(snapshotID: "2", capturedAt: timestamp2)
@@ -90,7 +90,7 @@ class SnapshotCashflowMapTests: XCTestCase {
                                               snapshot2.primaryKey: [cashflow1]]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testBeforeStart() {
         let snapshot2 = MValuationSnapshot(snapshotID: "2", capturedAt: timestamp2)
         let snapshot3 = MValuationSnapshot(snapshotID: "3", capturedAt: timestamp3)
@@ -103,7 +103,7 @@ class SnapshotCashflowMapTests: XCTestCase {
                                               snapshot3.primaryKey: [cashflow3]]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testEnsureSecondSnapshotGetsLeftoverCashflow() {
         // note that cashflow1 is exclusive of snapshot at timestamp1, so it's not in results
         let snapshot1 = MValuationSnapshot(snapshotID: "1", capturedAt: timestamp1)

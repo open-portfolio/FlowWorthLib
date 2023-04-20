@@ -10,13 +10,12 @@
 
 import Foundation
 
-import ModifiedDietz
 import AllocData
+import ModifiedDietz
 
 import FlowBase
 
 public extension MValuationCashflow {
-    
     // report on whether ANY candidates for consolidation exist (false == no candidates)
     static func consolidateCandidatesExist(_ ax: WorthContext) -> Bool {
         for snapshotKey in ax.orderedSnapshotKeys {
@@ -29,4 +28,3 @@ public extension MValuationCashflow {
         return false
     }
 }
-

@@ -23,7 +23,7 @@ class MValuationCashflowUtilsTests: XCTestCase {
         timestamp1 = df.date(from: "2020-01-31T12:00:00Z")!
         timestamp2 = df.date(from: "2020-01-31T13:00:00Z")!
     }
-    
+
     func testAttributes() {
         let txn = MValuationCashflow(transactedAt: timestamp1, accountID: "1", assetID: "Bond", amount: 100)
 
@@ -32,12 +32,12 @@ class MValuationCashflowUtilsTests: XCTestCase {
         XCTAssertEqual("Bond", txn.assetID)
         XCTAssertEqual(100, txn.amount)
     }
-    
+
     func testCashflowPeriodNoBeg() {
         let actual = MValuationCashflow.getCashflowPeriod(begCapturedAt: nil, endCapturedAt: timestamp2)
         XCTAssertNil(actual)
     }
-    
+
     func testCashflowPeriodBegEnd() {
         let actual = MValuationCashflow.getCashflowPeriod(begCapturedAt: timestamp1, endCapturedAt: timestamp1)
         XCTAssertNil(actual)

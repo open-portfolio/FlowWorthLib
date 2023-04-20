@@ -16,17 +16,16 @@ import AllocData
 import FlowBase
 
 extension BasePopulator {
-    
-    mutating public func populateRandom(_ model: inout BaseModel,
-                                        snapshotCount: Int = 12) throws {
-        
+    public mutating func populateRandom(_ model: inout BaseModel,
+                                        snapshotCount: Int = 12) throws
+    {
         // 1. generate accounts
         // 2. generate holdings for each account
         // 3. get first snapshot
         // 4. update security prices, modify holdings, & generate history records
         // 5. get next snapshot
         // 6. goto step 4
-        
+
         var ax = WorthContext(model)
         var capturedAt = Date()
         let firstSnapshot = PendingSnapshot(timestamp: capturedAt,
@@ -42,22 +41,22 @@ extension BasePopulator {
         var lastHoldings = model.holdings
         try model.commitPendingSnapshot(firstSnapshot)
 
-        try (1..<snapshotCount).forEach { _ in
+        try (1 ..< snapshotCount).forEach { _ in
             model.holdings = lastHoldings // simulate a user-import
-            
+
             // advance time
-            // TODO replace with endOfNextMonth()
+            // TODO: replace with endOfNextMonth()
             let startNextMonth = Calendar.current.startOfNextMonth(for: capturedAt)
             capturedAt = Calendar.current.endOfMonth(for: startNextMonth)
-            
+
             refreshSecurityPrices(timestamp: capturedAt)
             ax = WorthContext(model)
-            
+
             // update holdings and generate history records
             refreshHoldings(ax, &model, timestamp: capturedAt)
-            
+
             ax = WorthContext(model)
-            
+
             let pendingSnapshot = PendingSnapshot(timestamp: capturedAt,
                                                   holdings: model.holdings,
                                                   transactions: model.transactions,
@@ -72,25 +71,25 @@ extension BasePopulator {
             try model.commitPendingSnapshot(pendingSnapshot)
         }
     }
-    
+
     mutating func refreshHoldings(_ ax: WorthContext, _ model: inout BaseModel, timestamp: Date) {
         // vary holding share counts (up or down)
         var holdingKeysToDelete: Set<MHolding.Key> = Set()
         var unallocatedAssetValueMap: [AssetKey: Double] = [:]
         for (n, holding) in model.holdings.enumerated() {
             guard let assetKey = ax.securityMap[holding.securityKey]?.assetKey else { continue }
-            
+
             let begShareCount = holding.shareCount ?? 0
             let endShareCount = BasePopulator.getRandomShares(begShareCount)
             let deltaShareCount = endShareCount - begShareCount
             if deltaShareCount.isEqual(to: 0, accuracy: 0.001) { continue }
             let sharePrice = ax.securityMap[holding.securityKey]?.sharePrice ?? 0
-            
+
             // update holding and create history
             model.holdings[n].shareCount = endShareCount
-            
-            let action: MTransaction.Action = MTransaction.Action.allCases.randomElement() ?? .buysell
-            
+
+            let action = MTransaction.Action.allCases.randomElement() ?? .buysell
+
             let txn = MTransaction(action: action,
                                    transactedAt: timestamp,
                                    accountID: holding.accountID,
@@ -99,18 +98,18 @@ extension BasePopulator {
                                    shareCount: deltaShareCount,
                                    sharePrice: sharePrice)
             model.transactions.append(txn)
-            
+
             if endShareCount == 0 {
                 holdingKeysToDelete.insert(holding.primaryKey)
                 continue
             }
-            
+
             let deltaValue = deltaShareCount * sharePrice
             unallocatedAssetValueMap[assetKey, default: 0] += deltaValue
         }
-        
+
         model.holdings.removeAll(where: { holdingKeysToDelete.contains($0.primaryKey) })
-        
+
         // distribute any unallocated cash
         for (assetKey, value) in unallocatedAssetValueMap {
             guard value > 0,
@@ -128,7 +127,7 @@ extension BasePopulator {
             model.holdings.append(nuHolding)
         }
     }
-  
+
     // For baseShares=10, return random value in range 5...15
     static func getRandomShares(_ baseShares: Double, downFactor: Double = -0.5, upFactor: Double = 0.5) -> Double {
         let netDown = abs(baseShares) * downFactor // -5

@@ -11,19 +11,16 @@
 import Foundation
 
 public extension Array where Element: Equatable {
-    
     /// NOTE array values should be ordered
     func contiguousValueSlice(startValue: Element, endValue: Element) -> ArraySlice<Element>? {
-       
-        guard let startIndex = self.firstIndex(where: { $0 == startValue })
+        guard let startIndex = firstIndex(where: { $0 == startValue })
         else { return nil }
-        
-        let remainder = self.suffix(from: startIndex)
-        
+
+        let remainder = suffix(from: startIndex)
+
         guard let endIndex = remainder.firstIndex(where: { $0 == endValue })
         else { return nil }
-       
+
         return self[startIndex ... endIndex]
     }
 }
-

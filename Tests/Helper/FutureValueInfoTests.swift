@@ -18,10 +18,9 @@ import AllocData
 import FlowBase
 
 class FutureValueInfoTests: XCTestCase {
-
     typealias FLR = FutureValueInfo.LR
     typealias Point = FLR.Point
-    
+
     var df: ISO8601DateFormatter!
     var timestamp1: Date!
     var timestamp2: Date!
@@ -44,11 +43,11 @@ class FutureValueInfoTests: XCTestCase {
         let expected = timestamp3
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testGetFutureValuesEmpty() {
         XCTAssertNil(FLR(points: []))
     }
-    
+
     func testGetFutureValuesOne() {
         let points = [
             Point(x: timestamp1.timeIntervalSinceReferenceDate, y: 100),
@@ -58,7 +57,7 @@ class FutureValueInfoTests: XCTestCase {
         let actual = FutureValueInfo.getFutureValues([300.0], begInterval: 0.0, lr: lr)
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testGetFutureValuesTwo() {
         let points = [
             Point(x: timestamp1.timeIntervalSinceReferenceDate, y: 100),
@@ -68,12 +67,12 @@ class FutureValueInfoTests: XCTestCase {
         let expected: [FutureValueInfo] = [
             FutureValueInfo(futureValue: 220, estimatedDate: df.date(from: "2020-07-07T06:00:00Z")!),
             FutureValueInfo(futureValue: 240, estimatedDate: df.date(from: "2020-07-13T06:00:00Z")!),
-            FutureValueInfo(futureValue: 260, estimatedDate: df.date(from: "2020-07-19T06:00:00Z")!)
+            FutureValueInfo(futureValue: 260, estimatedDate: df.date(from: "2020-07-19T06:00:00Z")!),
         ]
         let actual = FutureValueInfo.getFutureValues([220, 240, 260], begInterval: 0.0, lr: lr)
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testGetNiceScalePositive() {
         let points = [
             Point(x: timestamp1.timeIntervalSinceReferenceDate, y: 100),
@@ -84,7 +83,7 @@ class FutureValueInfoTests: XCTestCase {
         let expected = [200.0, 220.0, 240.0, 260.0]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testGetNiceScaleNegativeToPositive() {
         let points = [
             Point(x: timestamp1.timeIntervalSinceReferenceDate, y: -100),

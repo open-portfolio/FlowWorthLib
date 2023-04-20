@@ -15,10 +15,9 @@ import AllocData
 import FlowBase
 
 extension MValuationPosition {
-    
-    internal static func validate(holding: MHolding, securityMap: SecurityMap) throws {
+    static func validate(holding: MHolding, securityMap: SecurityMap) throws {
         let securityKey = MSecurity.Key(securityID: holding.securityID)
-        
+
         guard holding.accountID != ""
         else { throw WorthError.invalidAccount("in holding") }
 

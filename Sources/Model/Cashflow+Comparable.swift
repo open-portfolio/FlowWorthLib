@@ -25,7 +25,7 @@ extension MValuationCashflow: Comparable {
 
         if lhs.assetKey < rhs.assetKey { return true }
         if lhs.assetKey > rhs.assetKey { return false }
-        
+
         if lhs.amount < rhs.amount { return true }
         if lhs.amount > rhs.amount { return false }
 

@@ -14,19 +14,18 @@ import AllocData
 
 import FlowBase
 
-extension MValuationCashflow {
-    
-   
-    public static func getSnapshotCashflowsMap(orderedSnapshots: ArraySlice<MValuationSnapshot>,
-                                               orderedCashflows: ArraySlice<MValuationCashflow>,
-                                               snapshotDateIntervalMap: SnapshotDateIntervalMap) -> SnapshotCashflowsMap {
+public extension MValuationCashflow {
+    static func getSnapshotCashflowsMap(orderedSnapshots: ArraySlice<MValuationSnapshot>,
+                                        orderedCashflows: ArraySlice<MValuationCashflow>,
+                                        snapshotDateIntervalMap: SnapshotDateIntervalMap) -> SnapshotCashflowsMap
+    {
         // NOTE there could be literally thousands of cashflow items, so scan through those only once (using iterator)
-        
+
         var cashflowIterator = orderedCashflows.makeIterator()
-        
+
         var nextCashflow: MValuationCashflow? = nil
-        let epoch = Date.init(timeIntervalSinceReferenceDate: 0)
-        
+        let epoch = Date(timeIntervalSinceReferenceDate: 0)
+
         return orderedSnapshots.reduce(into: [:]) { map, snapshot in
 
             let snapshotKey = snapshot.primaryKey
@@ -35,11 +34,12 @@ extension MValuationCashflow {
             // ... will have a date interval of (epoch...capturedAt)
             // ... but will NOT be allowed any cash flows
             guard let dateInterval = snapshotDateIntervalMap[snapshotKey],
-                  epoch < dateInterval.start else {
+                  epoch < dateInterval.start
+            else {
                 map[snapshotKey] = []
                 return
             }
-            
+
             while true {
                 // If unused cashflow (from previous snapshot), then we'll try to use it.
                 // Otherwise get next available cashflow from iterator, if any.
@@ -47,11 +47,11 @@ extension MValuationCashflow {
                 if nextCashflow == nil {
                     nextCashflow = cashflowIterator.next()
                 }
-                
+
                 guard let transactedAt = nextCashflow?.transactedAt else {
                     break
                 }
-                
+
                 // if cashflow is prior to date range, skip
                 // Note that comparison is exclusive of start, which belongs to previous snapshot.
                 if transactedAt <= dateInterval.start {
@@ -59,12 +59,12 @@ extension MValuationCashflow {
                     if nextCashflow == nil { break }
                     continue
                 }
-                
+
                 // If cashflow not in snapshot date range, then advance to next snapshot, if any.
                 guard transactedAt <= dateInterval.end else {
                     break
                 }
-                
+
                 map[snapshotKey, default: []].append(nextCashflow!)
                 nextCashflow = nil
             }

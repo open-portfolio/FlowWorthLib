@@ -22,7 +22,7 @@ class ExampleTests: XCTestCase {
     var df: ISO8601DateFormatter!
 
     override func setUpWithError() throws {
-        tz = TimeZone.init(identifier: "EST")!
+        tz = TimeZone(identifier: "EST")!
         df = ISO8601DateFormatter()
     }
 
@@ -31,7 +31,7 @@ class ExampleTests: XCTestCase {
         let ts1 = df.date(from: "2016-01-01T00:00:00Z")!
         let ts2 = df.date(from: "2016-12-30T23:59:59Z")!
         let ts3 = df.date(from: "2016-12-31T23:59:59Z")!
-        
+
         let account = MAccount(accountID: "1")
         let accountMap = [account.primaryKey: account]
         let asset2 = MAsset(assetID: "Cash")
@@ -68,13 +68,13 @@ class ExampleTests: XCTestCase {
         XCTAssertEqual(8_181_000, pending.periodSummary?.endMarketValue ?? 0, accuracy: 0.01)
         XCTAssertEqual(0.01, pending.periodSummary?.dietz?.performance ?? -1, accuracy: 0.01)
     }
-    
+
     // https://en.wikipedia.org/wiki/Modified_Dietz_method#Second_example
     func testWP2() throws {
         let ts1 = df.date(from: "2016-01-01T00:00:00Z")!
         let ts2 = df.date(from: "2016-11-14T12:00:00Z")!
         let ts3 = df.date(from: "2016-11-17T12:00:00Z")!
-        
+
         let account = MAccount(accountID: "1")
         let accountMap = [account.primaryKey: account]
         let asset2 = MAsset(assetID: "Cash")
@@ -118,14 +118,14 @@ class ExampleTests: XCTestCase {
         XCTAssertEqual(1_125_990, pending.periodSummary?.endMarketValue ?? 0, accuracy: 0.01)
         XCTAssertEqual(-0.00243, pending.periodSummary?.dietz?.performance ?? -1, accuracy: 0.00001)
     }
-    
+
     // https://en.wikipedia.org/wiki/Modified_Dietz_method#Example_3
     func testWP3() throws {
         let ts0 = df.date(from: "2016-01-01T12:00:00Z")!
         let ts1 = df.date(from: "2016-01-01T12:00:01Z")!
         let ts2 = df.date(from: "2016-10-01T12:00:00Z")! // beg of 4th quarter
         let ts3 = df.date(from: "2016-12-31T12:00:00Z")!
-        
+
         let account = MAccount(accountID: "1")
         let accountMap = [account.primaryKey: account]
         let asset2 = MAsset(assetID: "Cash")
@@ -139,7 +139,7 @@ class ExampleTests: XCTestCase {
                                  accountID: "1",
                                  securityID: "CORE",
                                  lotID: "",
-                                 shareCount: 10_000,
+                                 shareCount: 10000,
                                  sharePrice: 1)
         let txn2b = MTransaction(action: .buysell,
                                  transactedAt: ts2,
@@ -160,17 +160,17 @@ class ExampleTests: XCTestCase {
                                       accountMap: accountMap,
                                       assetMap: assetMap,
                                       securityMap: securityMap)
-        XCTAssertEqual(10_900, pending.periodSummary?.endMarketValue ?? 0, accuracy: 0.01)
+        XCTAssertEqual(10900, pending.periodSummary?.endMarketValue ?? 0, accuracy: 0.01)
         XCTAssertEqual(0.09, pending.periodSummary?.dietz?.performance ?? -1, accuracy: 0.0001)
     }
-    
+
     // https://www.wallstreetmojo.com/modified-dietz/
     func testMojo() throws {
         let ts0 = df.date(from: "2016-01-01T12:00:00Z")!
         let ts1 = df.date(from: "2016-01-01T12:00:01Z")!
         let ts2 = df.date(from: "2017-01-01T12:00:00Z")!
         let ts3 = df.date(from: "2018-01-01T12:00:00Z")!
-        
+
         let account = MAccount(accountID: "1")
         let accountMap = [account.primaryKey: account]
         let asset2 = MAsset(assetID: "Cash")

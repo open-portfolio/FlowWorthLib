@@ -51,7 +51,7 @@ class TxnTransferTests: XCTestCase {
     var prevSnapshot: MValuationSnapshot!
 
     override func setUpWithError() throws {
-        tz = TimeZone.init(identifier: "EST")!
+        tz = TimeZone(identifier: "EST")!
         df = ISO8601DateFormatter()
         timestamp1a = df.date(from: "2020-06-01T12:00:00Z")! // anchor
         timestamp1b = df.date(from: "2020-06-01T13:00:00Z")! // one hour later
@@ -83,7 +83,7 @@ class TxnTransferTests: XCTestCase {
         cashPos1 = MValuationPosition(snapshotID: snapshotID, accountID: "A", assetID: "Cash", totalBasis: 20, marketValue: 20)
         prevSnapshot = MValuationSnapshot(snapshotID: "y", capturedAt: timestamp1a)
     }
-    
+
     // transaction showing transfer in, but it's not showing as a holding
     // because it happened prior to first snapshot, we'll ignore it
     func testFirst0hold1add() throws {
@@ -93,7 +93,7 @@ class TxnTransferTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 0)
     }
 }

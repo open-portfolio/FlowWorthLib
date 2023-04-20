@@ -10,44 +10,44 @@
 
 import Foundation
 
-fileprivate var df: ISO8601DateFormatter = ISO8601DateFormatter()
+private var df: ISO8601DateFormatter = .init()
 
 extension Calendar {
     func numberOfDaysBetween(_ from: Date, and to: Date) -> Int {
         let fromDate = startOfDay(for: from) // <1>
         let toDate = startOfDay(for: to) // <2>
         let numberOfDays = dateComponents([.day], from: fromDate, to: toDate) // <3>
-        
+
         return numberOfDays.day!
     }
 
     func startOfNextDay(for date: Date) -> Date {
-        let _startOfDay = self.startOfDay(for: date)
+        let _startOfDay = startOfDay(for: date)
         return self.date(byAdding: .day, value: 1, to: _startOfDay)!
     }
-    
+
     func startOfMonth(for date: Date) -> Date {
-        self.date(from: self.dateComponents([.year, .month],
-                                            from: self.startOfDay(for: date)))!
+        self.date(from: dateComponents([.year, .month],
+                                       from: startOfDay(for: date)))!
     }
-    
+
     func startOfNextMonth(for date: Date) -> Date {
-        let _startOfMonth = self.startOfMonth(for: date)
+        let _startOfMonth = startOfMonth(for: date)
         return self.date(byAdding: .month, value: 1, to: _startOfMonth)!
     }
 
     func endOfMonth(for date: Date) -> Date {
         self.date(byAdding: DateComponents(month: 1, second: -1),
-                  to: self.startOfMonth(for: date))!
+                  to: startOfMonth(for: date))!
     }
-    
+
     func startOfYear(for date: Date) -> Date {
-        let year = self.component(.year, from: date)
+        let year = component(.year, from: date)
         return self.date(from: DateComponents(year: year, month: 1, day: 1, hour: 0, minute: 0, second: 0, nanosecond: 0))!
     }
-    
+
     func startOfNextYear(for date: Date) -> Date {
-        let _startOfYear = self.startOfYear(for: date)
+        let _startOfYear = startOfYear(for: date)
         return self.date(byAdding: .year, value: 1, to: _startOfYear)!
     }
 }
@@ -72,8 +72,9 @@ public extension Date {
     func distances(to timestamps: [Date]) -> [TimeInterval] {
         timestamps.map { self.distance(to: $0) }
     }
+
     func distances(to timeIntervals: [TimeInterval]) -> [TimeInterval] {
-        let start = self.timeIntervalSinceReferenceDate
+        let start = timeIntervalSinceReferenceDate
         return timeIntervals.map { $0 - start }
     }
 }
@@ -91,15 +92,14 @@ extension DateInterval {
 }
 
 public extension DateInterval {
-    
     // Return the date relative to the interval, where 0 is the start of the interval, and 1 its end (or length also).
     // To select inside interval, use unit value 0...1
     // To select prior to interval, use negative
     // To select after interval, use 1+
     func at(_ unitVal: Double) -> Date {
-        self.start + (unitVal * self.duration)
+        start + (unitVal * duration)
     }
-    
+
     var midway: Date {
         at(0.5)
     }

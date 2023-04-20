@@ -15,9 +15,8 @@ import AllocData
 import FlowBase
 
 extension MValuationCashflow {
-    
-    static private let ONE_MINUTE = 60.0 // seconds
-    
+    private static let ONE_MINUTE = 60.0 // seconds
+
     /// The cashflow period starts one second after the start of the snapshot period, if there's any previous snapshot. It ends at the same time as the snapshot period.
     static func getCashflowPeriod(begCapturedAt: Date?, endCapturedAt: Date) -> DateInterval? {
         guard let netStart = begCapturedAt?.addingTimeInterval(ONE_MINUTE),
@@ -25,33 +24,34 @@ extension MValuationCashflow {
         else { return nil }
         return DateInterval(start: netStart, end: endCapturedAt)
     }
-    
+
     /// NOTE does NOT consolidate on CashflowKey
     static func generateCashflow(from txns: [MTransaction],
                                  period: DateInterval,
-                                 securityMap: SecurityMap) -> [MValuationCashflow] {
+                                 securityMap: SecurityMap) -> [MValuationCashflow]
+    {
         txns.reduce(into: []) { cashflows, txn in
             let security = securityMap[txn.securityKey]
-            
+
             func generate(_ assetID: AssetID,
                           _ amount: Double,
-                          transactedAt: Date? = nil) {
-                
+                          transactedAt: Date? = nil)
+            {
                 let netTransactedAt = period.clamp(transactedAt ?? txn.transactedAt)
-                
+
                 cashflows.append(.init(transactedAt: netTransactedAt,
                                        accountID: txn.accountID,
                                        assetID: assetID,
                                        amount: amount))
             }
-            
+
             let cashAssetID = MAsset.cashAssetID // "Cash"
-            
+
             guard let mv = txn.marketValue else {
                 print("generateCashflow: missing marketvalue")
                 return
             }
-            
+
             switch txn.action {
             case .buysell:
                 guard let _security = security,
@@ -62,14 +62,14 @@ extension MValuationCashflow {
                 // if sale (-MV), we exchange the asset for cash
                 generate(_security.assetID, mv)
                 generate(cashAssetID, -mv)
-                
+
             case .income:
                 // If dividend, we 'sell' the income from asset for cash.
                 // If interest, just generate a cash exchange (TODO can we do better?)
                 let _assetID = security?.assetID ?? cashAssetID
                 generate(_assetID, -mv)
                 generate(cashAssetID, mv)
-                
+
             case .transfer:
                 // if transferring out securities (where MV<0), treat it as a sale to cash (to record profit), and then transfer cash out
                 if let _security = security,
@@ -83,7 +83,7 @@ extension MValuationCashflow {
                     let _assetID = security?.assetID ?? cashAssetID
                     generate(_assetID, mv) // flow (asset or cash)
                 }
-                
+
             case .miscflow:
                 generate(cashAssetID, mv)
             }
@@ -94,12 +94,12 @@ extension MValuationCashflow {
 // MARK: - Reconcile
 
 extension MValuationCashflow {
-    
     /// make reconcile cashflow records, except for cash (which can reflect income)
     static func makeCashflow(from map: AccountAssetValueMap,
                              timestamp: Date,
                              accountMap: AccountMap,
-                             assetMap: AssetMap) -> [MValuationCashflow] {
+                             assetMap: AssetMap) -> [MValuationCashflow]
+    {
         map.reduce(into: []) { array, entry in
             let (accountAssetKey, amount) = entry
             guard accountAssetKey.assetKey != MAsset.cashAssetKey,
@@ -107,9 +107,9 @@ extension MValuationCashflow {
                   let assetID = assetMap[accountAssetKey.assetKey]?.assetID
             else { return }
             array.append(.init(transactedAt: timestamp,
-                                              accountID: accountID,
-                                              assetID: assetID,
-                                              amount: amount))
+                               accountID: accountID,
+                               assetID: assetID,
+                               amount: amount))
         }
     }
 }
@@ -117,15 +117,15 @@ extension MValuationCashflow {
 // MARK: - Consolidation
 
 extension MValuationCashflow {
-    
     /// There may be multiple cashflows sharing the same primary key (transactedAt, accountKey, assetID).
     ///
     /// Here we consolidate them so the keys are unique. The amounts are summed.
     /// Result is ordered.
     ///
     /// Cashflows with net sum of zero are omitted.
-    internal static func consolidateCashflows(_ cashflows: [MValuationCashflow],
-                                              epsilon: Double = 0.01) -> CashflowMap {
+    static func consolidateCashflows(_ cashflows: [MValuationCashflow],
+                                     epsilon: Double = 0.01) -> CashflowMap
+    {
         let grouped: [CashflowKey: [MValuationCashflow]] = Dictionary(grouping: cashflows, by: { $0.primaryKey })
         return grouped.reduce(into: [:]) { map, entry in
             let (key, cashflows) = entry

@@ -15,7 +15,6 @@ import AllocData
 import FlowBase
 
 public final class MatrixResultCache {
-
     public var mrAccountMap: [AccountKey: MatrixResult] = [:]
     public var mrStrategyMap: [StrategyKey: MatrixResult] = [:]
     public var mrStrategyTradingMap: [StrategyKey: MatrixResult] = [:]
@@ -35,7 +34,8 @@ public final class MatrixResultCache {
                 excludedAccountMap: [AccountKey: Bool] = [:],
                 orderedAssetKeys: [AssetKey] = [],
                 trackPerformance: Bool = false,
-                timeZone: TimeZone = TimeZone.current) {
+                timeZone: TimeZone = TimeZone.current)
+    {
         self.ax = ax
         self.begSnapshotKey = begSnapshotKey
         self.endSnapshotKey = endSnapshotKey
@@ -44,9 +44,9 @@ public final class MatrixResultCache {
         self.trackPerformance = trackPerformance
         self.timeZone = timeZone
     }
-    
+
     // MARK: - Lazy Properties
-    
+
     lazy var begSnapshot: MValuationSnapshot? = {
         ax.snapshotMap[begSnapshotKey]
     }()
@@ -63,18 +63,16 @@ public final class MatrixResultCache {
         else { return [] }
         return snapshots
     }()
-    
-    lazy var snapshotKeys: [SnapshotKey] = {
-        orderedSnapshots.map(\.primaryKey)
-    }()
-    
+
+    lazy var snapshotKeys: [SnapshotKey] = orderedSnapshots.map(\.primaryKey)
+
     lazy var snapshotDateInterval: DateInterval? = {
         guard let _begSnapshot = begSnapshot,
               let _endSnapshot = endSnapshot
         else { return nil }
         return DateInterval(start: _begSnapshot.capturedAt, end: _endSnapshot.capturedAt)
     }()
-    
+
     /// positions filtered down to relevant snapshots (but not by account)
     lazy var positions: [MValuationPosition] = {
         snapshotKeys.reduce(into: []) { array, snapshotKey in
@@ -82,7 +80,7 @@ public final class MatrixResultCache {
             array.append(contentsOf: positions)
         }
     }()
-    
+
     /// cashflows filtered down to relevant snapshots (but not by account)
     lazy var orderedCashflows: [MValuationCashflow] = {
         snapshotKeys.reduce(into: []) { array, snapshotKey in
@@ -90,17 +88,17 @@ public final class MatrixResultCache {
             array.append(contentsOf: cashflows)
         }
     }()
-    
+
     // MARK: - Factory
-    
+
     private func generate(accountKeyFilter: @escaping AccountKeyFilter,
-                          accountKey: AccountKey = MAccount.emptyKey) -> MatrixResult {
-        
+                          accountKey: AccountKey = MAccount.emptyKey) -> MatrixResult
+    {
         func combinedFilter(_ accountKey: AccountKey) -> Bool {
             accountKeyFilter(accountKey) &&
                 !excludedAccountMap[accountKey, default: false]
         }
-        
+
         return MatrixResult(orderedSnapshots: orderedSnapshots,
                             rawOrderedCashflow: orderedCashflows,
                             valuationPositions: positions,
@@ -109,15 +107,13 @@ public final class MatrixResultCache {
                             timeZone: timeZone,
                             accountMap: ax.accountMap)
     }
-    
+
     // MARK: - Single-Fetchers
-    
-    public lazy var mrBirdsEye: MatrixResult = {
-        generate(accountKeyFilter: { _ in true })
-    }()
-    
+
+    public lazy var mrBirdsEye: MatrixResult = generate(accountKeyFilter: { _ in true })
+
     // MARK: - Filtered Fetchers
-    
+
     // get MR for a single account
     public func getAccountMR(_ accountKey: AccountKey) -> MatrixResult {
         if let mr = mrAccountMap[accountKey] { return mr }
@@ -143,7 +139,7 @@ public final class MatrixResultCache {
         mrStrategyTradingMap[strategyKey] = nuMR
         return nuMR
     }
-    
+
     public func getStrategyNonTradingMR(_ strategyKey: StrategyKey) -> MatrixResult {
         if let mr = mrStrategyNonTradingMap[strategyKey] { return mr }
         let accounts = ax.strategyFixedAccountsMap[strategyKey] ?? []

@@ -8,7 +8,6 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 //
 
-
 import Foundation
 
 @testable import FlowWorthLib
@@ -28,7 +27,7 @@ class SnapshotDateIntervalMapTests: XCTestCase {
     var snapshot1b: MValuationSnapshot!
     var snapshot1c: MValuationSnapshot!
     var snapshot3b: MValuationSnapshot!
-    let epoch = Date.init(timeIntervalSinceReferenceDate: 0)
+    let epoch = Date(timeIntervalSinceReferenceDate: 0)
 
     override func setUpWithError() throws {
         df = ISO8601DateFormatter()
@@ -36,13 +35,13 @@ class SnapshotDateIntervalMapTests: XCTestCase {
         timestamp1b = df.date(from: "2020-06-01T13:00:00Z")! // one hour later
         timestamp1c = df.date(from: "2020-06-01T18:00:00Z")! // six hours later
         timestamp3b = df.date(from: "2020-06-03T12:00:00Z")!
-        
+
         snapshot1a = MValuationSnapshot(snapshotID: "1a", capturedAt: timestamp1a)
         snapshot1b = MValuationSnapshot(snapshotID: "1b", capturedAt: timestamp1b)
         snapshot1c = MValuationSnapshot(snapshotID: "1c", capturedAt: timestamp1c)
         snapshot3b = MValuationSnapshot(snapshotID: "3b", capturedAt: timestamp3b)
     }
-    
+
     func testEmpty() {
         let actual = MValuationSnapshot.getSnapshotDateIntervalMap(orderedSnapshots: [])
         let expected: SnapshotDateIntervalMap = [:]
@@ -61,13 +60,14 @@ class SnapshotDateIntervalMapTests: XCTestCase {
                                                  snapshot1b.primaryKey: DateInterval(start: timestamp1a, end: timestamp1b)]
         XCTAssertEqual(expected, actual)
     }
-    
+
     func testThreeSnapshots() {
         let actual = MValuationSnapshot.getSnapshotDateIntervalMap(orderedSnapshots: [snapshot1a, snapshot1b, snapshot3b])
         let expected: SnapshotDateIntervalMap = [
             snapshot1a.primaryKey: DateInterval(start: epoch, end: snapshot1a.capturedAt),
             snapshot1b.primaryKey: DateInterval(start: timestamp1a, end: timestamp1b),
-            snapshot3b.primaryKey: DateInterval(start: timestamp1b, end: timestamp3b)]
+            snapshot3b.primaryKey: DateInterval(start: timestamp1b, end: timestamp3b),
+        ]
         XCTAssertEqual(expected, actual)
     }
 }

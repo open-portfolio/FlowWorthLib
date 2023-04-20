@@ -51,7 +51,7 @@ class TxnMiscTests: XCTestCase {
     var prevSnapshot: MValuationSnapshot!
 
     override func setUpWithError() throws {
-        tz = TimeZone.init(identifier: "EST")!
+        tz = TimeZone(identifier: "EST")!
         df = ISO8601DateFormatter()
         timestamp1a = df.date(from: "2020-06-01T12:00:00Z")! // anchor
         timestamp1b = df.date(from: "2020-06-01T13:00:00Z")! // one hour later
@@ -83,9 +83,9 @@ class TxnMiscTests: XCTestCase {
         cashPos1 = MValuationPosition(snapshotID: snapshotID, accountID: "A", assetID: "Cash", totalBasis: 20, marketValue: 20)
         prevSnapshot = MValuationSnapshot(snapshotID: "y", capturedAt: timestamp1a)
     }
-    
+
     // MARK: - Add
-    
+
     // transaction showing misc change, but it's not showing as a holding
     // because it happened prior to first snapshot, we'll ignore it
     func testFirst0hold1add() throws {
@@ -95,10 +95,10 @@ class TxnMiscTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 0)
     }
-    
+
     // transaction showing misc change, and it's showing as a holding
     // (ensure it doesn't generate any cash flow)
     func testFirst1hold1add() throws {
@@ -109,13 +109,13 @@ class TxnMiscTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 1)
         XCTAssertEqual(cashPos1, ps.nuPositions.first)
     }
-    
+
     // MARK: - Subtract
-    
+
     // transaction showing misc change, but it's not showing as a holding
     // because it happened prior to first snapshot, we'll ignore it
     func testFirst0hold1sub() throws {
@@ -125,10 +125,10 @@ class TxnMiscTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 0)
     }
-    
+
     // transaction showing misc change, and it's showing as a holding
     // (ensure it doesn't generate any cash flow)
     func testFirst1hold1sub() throws {
@@ -139,7 +139,7 @@ class TxnMiscTests: XCTestCase {
                                  assetMap: assetMap,
                                  securityMap: securityMap)
         XCTAssertEqual(ps.nuCashflows.count, 0)
-        //XCTAssertEqual(ps.reconciledCashflows.count, 0)
+        // XCTAssertEqual(ps.reconciledCashflows.count, 0)
         XCTAssertEqual(ps.nuPositions.count, 1)
         XCTAssertEqual(cashPos1, ps.nuPositions.first)
     }

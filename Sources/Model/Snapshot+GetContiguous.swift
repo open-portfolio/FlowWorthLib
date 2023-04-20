@@ -15,9 +15,8 @@ import AllocData
 import FlowBase
 
 extension MValuationSnapshot {
-    
     static func getSnapshotDateIntervals(orderedSnapshots snapshots: ArraySlice<MValuationSnapshot>) -> [SnapshotKeyDateIntervalTuple] {
-        var lastCapturedAt = Date.init(timeIntervalSinceReferenceDate: 0)
+        var lastCapturedAt = Date(timeIntervalSinceReferenceDate: 0)
         return snapshots.reduce(into: []) { array, snapshot in
             let capturedAt = snapshot.capturedAt
             let tuple = (snapshot.primaryKey, DateInterval(start: lastCapturedAt, end: capturedAt))
@@ -25,7 +24,7 @@ extension MValuationSnapshot {
             lastCapturedAt = capturedAt
         }
     }
-    
+
     /// NOTE the first snapshot will have a map entry of (Date.init(timeIntervalSinceReferenceDate: 0)...capturedAt)
     /// The keyed snapshot interval will start with the capturedAt of previous snapshot and end with its own.
     static func getSnapshotDateIntervalMap(orderedSnapshots snapshots: ArraySlice<MValuationSnapshot>) -> SnapshotDateIntervalMap {
