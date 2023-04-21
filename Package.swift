@@ -31,8 +31,6 @@ let package = Package(
         .target(
             name: "FlowWorthLib",
             dependencies: [
-                "FlowBase",
-                "FlowStats",
                 .product(name: "FlowBase", package: "FlowBase"),
                 .product(name: "FlowStats", package: "FlowStats"),
                 .product(name: "SeriesResampler", package: "SwiftSeriesResampler"),
