@@ -1,6 +1,6 @@
 # FlowWorthLib
 
-Swift library containing support for the [FlowWorth](https://open-portfolio.github.io/worth) app
+Swift library containing support for the [Flow Worth](https://open-portfolio.github.io/worth) app
 
 _FlowWorthLib_ is part of the [OpenAlloc](https://github.com/openalloc) family of open source Swift software tools.
 
